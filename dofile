@@ -1,0 +1,203 @@
+**********************************************
+*Patch_DOB_Gender.do estimates year of birth (yob) and gender from the worker_id.
+*
+*Using 46,951,991 ids, I estimate the ranges of YOB and gender.
+*Last edited: Jul2022
+**********************************************
+
+*****************************
+*Housekeeping
+*****************************
+
+clear
+set more off
+
+*****************************
+*Macros
+*****************************
+*User
+global who = "" /* Set you globals */
+*************************
+*Paths /* Set your folders*/
+*************************
+if "$who" == "Min" global pathinit = ""
+if "$who" == "M"   global pathinit = "D:\Mati\argentina_clean" /*FakeSIPA*/
+
+global original_data = "$pathinit/Input"
+
+global temp = "$pathinit/Temp"
+
+global results = "$pathinit/Output"
+
+capture log close
+log using "$temp/Data_Prep.txt", replace text
+cd "$original_data"
+
+***************************************************************************
+*Recovering DOB
+***************************************************************************
+
+*We need to identify the ids without gender
+forvalues y=1996/2018{
+use "$results/Data_Clean_`y'.dta", clear
+keep if DOB == .
+keep worker_id
+bysort worker_id: keep if _n==1
+
+gen id=string(worker_id, "%13.0f")
+gen first_5digit= real(substr(worker_id, 3,5))
+drop id
+save "$results/ids_wodob_`y'.dta"
+}
+
+*Append
+forvalues y=1996/2018{
+append using "$results/ids_woDOB_`y'.dta"
+}
+bysort worker_id: keep if _n==1
+
+*We define the ranges (1929/2015)
+gen		yob	=	1929	if	first_5digit	>	3435	&	first_5digit	<=	3585
+replace	yob	=	1930	if	first_5digit	>	3585	&	first_5digit	<=	3741
+replace	yob	=	1931	if	first_5digit	>	3741	&	first_5digit	<=	3904
+replace	yob	=	1932	if	first_5digit	>	3904	&	first_5digit	<=	4074
+replace	yob	=	1933	if	first_5digit	>	4074	&	first_5digit	<=	4251
+replace	yob	=	1934	if	first_5digit	>	4251	&	first_5digit	<=	4436
+replace	yob	=	1935	if	first_5digit	>	4436	&	first_5digit	<=	4621
+replace	yob	=	1936	if	first_5digit	>	4621	&	first_5digit	<=	5018
+replace	yob	=	1937	if	first_5digit	>	5018	&	first_5digit	<=	5343
+replace	yob	=	1938	if	first_5digit	>	5343	&	first_5digit	<=	5399
+replace	yob	=	1939	if	first_5digit	>	5399	&	first_5digit	<=	5411
+replace	yob	=	1940	if	first_5digit	>	5411	&	first_5digit	<=	5423
+replace	yob	=	1941	if	first_5digit	>	5423	&	first_5digit	<=	5684
+replace	yob	=	1942	if	first_5digit	>	5684	&	first_5digit	<=	5692
+replace	yob	=	1943	if	first_5digit	>	5692	&	first_5digit	<=	5700
+replace	yob	=	1944	if	first_5digit	>	5700	&	first_5digit	<=	5856
+replace	yob	=	1945	if	first_5digit	>	5856	&	first_5digit	<=	6152
+replace	yob	=	1946	if	first_5digit	>	6152	&	first_5digit	<=	6499
+replace	yob	=	1947	if	first_5digit	>	6499	&	first_5digit	<=	6629
+replace	yob	=	1948	if	first_5digit	>	6629	&	first_5digit	<=	6913
+replace	yob	=	1949	if	first_5digit	>	6913	&	first_5digit	<=	7197
+replace	yob	=	1950	if	first_5digit	>	7197	&	first_5digit	<=	7697
+replace	yob	=	1951	if	first_5digit	>	7697	&	first_5digit	<=	10202
+replace	yob	=	1952	if	first_5digit	>	10202	&	first_5digit	<=	10739
+replace	yob	=	1953	if	first_5digit	>	10739	&	first_5digit	<=	11170
+replace	yob	=	1954	if	first_5digit	>	11170	&	first_5digit	<=	11620
+replace	yob	=	1955	if	first_5digit	>	11620	&	first_5digit	<=	12083
+replace	yob	=	1956	if	first_5digit	>	12083	&	first_5digit	<=	12843
+replace	yob	=	1957	if	first_5digit	>	12843	&	first_5digit	<=	12910
+replace	yob	=	1958	if	first_5digit	>	12910	&	first_5digit	<=	12976
+replace	yob	=	1959	if	first_5digit	>	12976	&	first_5digit	<=	13786
+replace	yob	=	1960	if	first_5digit	>	13786	&	first_5digit	<=	14316
+replace	yob	=	1961	if	first_5digit	>	14316	&	first_5digit	<=	14866
+replace	yob	=	1962	if	first_5digit	>	14866	&	first_5digit	<=	16076
+replace	yob	=	1963	if	first_5digit	>	16076	&	first_5digit	<=	16711
+replace	yob	=	1964	if	first_5digit	>	16711	&	first_5digit	<=	17177
+replace	yob	=	1965	if	first_5digit	>	17177	&	first_5digit	<=	17670
+replace	yob	=	1966	if	first_5digit	>	17670	&	first_5digit	<=	18119
+replace	yob	=	1967	if	first_5digit	>	18119	&	first_5digit	<=	18528
+replace	yob	=	1968	if	first_5digit	>	18528	&	first_5digit	<=	20715
+replace	yob	=	1969	if	first_5digit	>	20715	&	first_5digit	<=	21402
+replace	yob	=	1970	if	first_5digit	>	21402	&	first_5digit	<=	22044
+replace	yob	=	1971	if	first_5digit	>	22044	&	first_5digit	<=	22579
+replace	yob	=	1972	if	first_5digit	>	22579	&	first_5digit	<=	23134
+replace	yob	=	1973	if	first_5digit	>	23134	&	first_5digit	<=	23705
+replace	yob	=	1974	if	first_5digit	>	23705	&	first_5digit	<=	24319
+replace	yob	=	1975	if	first_5digit	>	24319	&	first_5digit	<=	24981
+replace	yob	=	1976	if	first_5digit	>	24981	&	first_5digit	<=	25618
+replace	yob	=	1977	if	first_5digit	>	25618	&	first_5digit	<=	26299
+replace	yob	=	1978	if	first_5digit	>	26299	&	first_5digit	<=	26997
+replace	yob	=	1979	if	first_5digit	>	26997	&	first_5digit	<=	27723
+replace	yob	=	1980	if	first_5digit	>	27723	&	first_5digit	<=	28422
+replace	yob	=	1981	if	first_5digit	>	28422	&	first_5digit	<=	29132
+replace	yob	=	1982	if	first_5digit	>	29132	&	first_5digit	<=	29878
+replace	yob	=	1983	if	first_5digit	>	29878	&	first_5digit	<=	30585
+replace	yob	=	1984	if	first_5digit	>	30585	&	first_5digit	<=	31263
+replace	yob	=	1985	if	first_5digit	>	31263	&	first_5digit	<=	31922
+replace	yob	=	1986	if	first_5digit	>	31922	&	first_5digit	<=	32638
+replace	yob	=	1987	if	first_5digit	>	32638	&	first_5digit	<=	33323
+replace	yob	=	1988	if	first_5digit	>	33323	&	first_5digit	<=	34107
+replace	yob	=	1989	if	first_5digit	>	34107	&	first_5digit	<=	34817
+replace	yob	=	1990	if	first_5digit	>	34817	&	first_5digit	<=	35579
+replace	yob	=	1991	if	first_5digit	>	35579	&	first_5digit	<=	36377
+replace	yob	=	1992	if	first_5digit	>	36377	&	first_5digit	<=	37077
+replace	yob	=	1993	if	first_5digit	>	37077	&	first_5digit	<=	37811
+replace	yob	=	1994	if	first_5digit	>	37811	&	first_5digit	<=	38499
+replace	yob	=	1995	if	first_5digit	>	38499	&	first_5digit	<=	39359
+replace	yob	=	1996	if	first_5digit	>	39359	&	first_5digit	<=	40103
+replace	yob	=	1997	if	first_5digit	>	40103	&	first_5digit	<=	40906
+replace	yob	=	1998	if	first_5digit	>	40906	&	first_5digit	<=	41644
+replace	yob	=	1999	if	first_5digit	>	41644	&	first_5digit	<=	42372
+replace	yob	=	2000	if	first_5digit	>	42372	&	first_5digit	<=	43145
+replace	yob	=	2001	if	first_5digit	>	43145	&	first_5digit	<=	43831
+replace	yob	=	2002	if	first_5digit	>	43831	&	first_5digit	<=	44660
+replace	yob	=	2003	if	first_5digit	>	44660	&	first_5digit	<=	45392
+replace	yob	=	2004	if	first_5digit	>	45392	&	first_5digit	<=	46201
+replace	yob	=	2005	if	first_5digit	>	46201	&	first_5digit	<=	46916
+replace	yob	=	2006	if	first_5digit	>	46916	&	first_5digit	<=	47653
+replace	yob	=	2007	if	first_5digit	>	47653	&	first_5digit	<=	48369
+replace	yob	=	2008	if	first_5digit	>	48369	&	first_5digit	<=	49119
+replace	yob	=	2009	if	first_5digit	>	49119	&	first_5digit	<=	49919
+replace	yob	=	2010	if	first_5digit	>	49919	&	first_5digit	<=	50699
+replace	yob	=	2011	if	first_5digit	>	50699	&	first_5digit	<=	51742
+replace	yob	=	2012	if	first_5digit	>	51742	&	first_5digit	<=	52788
+replace	yob	=	2013	if	first_5digit	>	52788	&	first_5digit	<=	53581
+replace	yob	=	2014	if	first_5digit	>	53581	&	first_5digit	<=	54362
+replace	yob	=	2015	if	first_5digit	>	54362	&	first_5digit	<=	54721
+
+drop first_5digit
+
+save "$results/ids_dob.dta", replace
+
+*Merge & replacement in our original variable
+forvalues y=1996/2018{
+use "$results/Data_Clean_`y'.dta", clear
+
+merge m:1 worker_id using "$results/ids_dob.dta", nogen keep(matched master)
+replace year_birth=yob if year_birth == . 
+
+save "$results/Data_Clean_`y'.dta", replace
+}
+
+************************************************************************************
+*Recovering gender
+************************************************************************************
+clear
+
+*First, we need to identify the ids without gender
+forvalues y=1996/2018{
+use "$results/Data_Clean_`y'.dta", clear
+keep if DOB == .
+keep worker_id
+bysort worker_id: keep if _n==1
+
+gen id=string(worker_id, "%13.0f")
+gen digits_gender= real(substr(id,1,2))
+drop id
+
+save "$results/ids_wogender_y.dta", replace
+}
+
+*Append
+forvalues y=1996/2018{
+append using "$results/ids_wogender_`y'.dta", replace
+}
+bysort worker_id: keep if _n==1
+save "$results/ids_gender.dta", replace
+
+*Merge and replacement in our original variable
+forvalues y=1996/2018{
+use "$results/Data_Clean_`y'.dta", clear
+
+merge m:1 worker_id using "$results/ids_gender.dta", nogen keep(matched master)
+
+*Male
+replace gender=3 if gender == . & digits_gender == 20
+
+*Female
+replace gender=2 if gender == . & digits_gender == 27
+
+save "$results/Data_Clean_`y'.dta", replace
+}
+
+clear all
